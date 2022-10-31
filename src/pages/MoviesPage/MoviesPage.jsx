@@ -1,26 +1,30 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { MoviesApi } from "services/moviesApi";
-import { Container, SearchForm, SearchInput, SearchButton } from "./MoviesPage.styled";
+import { Container, SearchForm, SearchInput, SearchButton, Title } from "./MoviesPage.styled";
 
-export const MoviesPage = () => {
-    const [query, setQuery] = useState('');
+const MoviesPage = () => {
     const [movies, setMovies] = useState([]);
+    const [error, setError] = useState("");
+    const [searchParams, setSearchParams] = useSearchParams();
+    const query = searchParams.get("movie");
+    const location = useLocation();
 
     useEffect(() => {
+        if (!query) return;
         function fetchMovies() {
-
             MoviesApi.fetchMovies(query)
                 .then(resp => {
-                    console.log("resp", resp);
-                    setMovies(state => [...state, ...resp])
-                }
-                )
+                    if (!resp.length) {
+                        throw new Error("Nothing was found for your query.")
+                    }
+                    setMovies(resp);
+                }).catch(err => {
+                    setError(err.message);
+                })
         };
 
-        if (query) {
-            fetchMovies();
-        }
+        fetchMovies();
     }, [query]);
 
     const handleSubmit = (evt) => {
@@ -30,8 +34,9 @@ export const MoviesPage = () => {
             evt.target.reset();
             return;
         }
-        // setPage(1);
-        setQuery(value);
+        setSearchParams({ movie: value });
+        setMovies([]);
+        setError("");
         evt.target.reset();
     }
 
@@ -48,14 +53,16 @@ export const MoviesPage = () => {
                 />
                 <SearchButton type="submit">Search</SearchButton>
             </SearchForm>
+            {error && <p>{error}</p>}
             {movies.length > 0 && <ul>
                 {movies.map(({ id, title }) => (
-                    <li key={id}>{title}
-                        <Link to={`${id}`}>More details</Link>
+                    <li key={id}><Title>{title}</Title>
+                        <Link to={`/movies/${id}`} state={{ from: location }}>More details</Link>
                     </li>
                 ))}
             </ul>}
-            <Outlet />
         </Container>
     )
 }
+
+export default MoviesPage;

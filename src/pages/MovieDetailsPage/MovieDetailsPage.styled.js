@@ -10,4 +10,10 @@ const Link = styled(NavLink)`
   }
 `;
 
-export { Link };
+const Container = styled.div`
+  display: flex;
+  padding: 30px;
+  gap: 50px;
+`;
+
+export { Link, Container };

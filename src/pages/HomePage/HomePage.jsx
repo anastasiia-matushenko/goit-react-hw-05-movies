@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom";
 import { MoviesApi } from "services/moviesApi"
-import { Container, Gallery, Item, Title } from "./HomePage.styled";
 
 export const HomePage = () => {
     const [movies, setMovies] = useState([]);
 
     useEffect(() => {
-        MoviesApi.fetchTrendingMovies().then(setMovies);
-        console.log("HOME started fetching movies");
+        MoviesApi.fetchTrendingMovies().then(setMovies).catch(err => {
+            alert(err.message);
+        });
     }, [])
 
     return (
-        <Container>
+        <div>
             <h1>Trending Today</h1>
-            <Gallery>
+            <ul>
                 {movies.length > 0 && movies.map(({ id, title, poster_path }) => (
-                    <Item key={id}>
-                        <Title>{title}</Title>
-                        <img src={`https://image.tmdb.org/t/p/w300${poster_path}`} alt={title} />
-                    </Item>))}
-            </Gallery>
-        </Container>
+                    <li key={id}>
+                        <Link to={`/movies/${id}`}>{title}</Link>
+                    </li>))}
+            </ul>
+        </div>
     )
 }

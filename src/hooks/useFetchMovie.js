@@ -7,7 +7,11 @@ export const useFetchMovie = () => {
   const { movieId } = useParams();
 
   useEffect(() => {
-    MoviesApi.fetchMovieById(movieId).then(setMovie);
+    MoviesApi.fetchMovieById(movieId)
+      .then(setMovie)
+      .catch(err => {
+        alert(err.message);
+      });
   }, [movieId]);
 
   return movie;
