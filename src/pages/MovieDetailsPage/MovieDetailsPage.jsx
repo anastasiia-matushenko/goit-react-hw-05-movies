@@ -8,8 +8,9 @@ export const MoviesDetailsPage = () => {
     return (
         <>
             <>
-                <h2>DETAILS</h2>
+                {movie && (<h2>DETAILS</h2>)}
 
+                {/* {movie.length > 0 && movie.map((item) => <p key={item.id}>{item.title}</p>)} */}
                 <Outlet />
             </>
         </>
